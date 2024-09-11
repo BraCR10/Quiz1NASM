@@ -11,12 +11,12 @@
 welcome_msg db 'Bienvenido al convertidor de base 2 a base 10',0
 instruction_msg db 'Ingrese la secuencia binaria: ',0
 result_msg db 'El numero decimal de la secuencia binaria es: ',0
-warming_msg db 'ADVERTENCIA: El programa solo convierte hasta 16 bits(32767 base 10)',0
+warming_msg db 'ADVERTENCIA: El programa solo convierte hasta 16 digitos(32767 base 10)',0
 nonbynary_error_msg db 'El numero binario no es valido',0
 author_info_msg db 'Estudiante: Brian Ramirez Arias Carnet: 2024109557', 0
 
 .UDATA
-bynarySecuence resb 16      ; Buffer para 16 bits 
+bynarySequence resb 16      ; Buffer de 16 bytes(16 digitos) 
 numDigits resb 1            ; Almacena el número de dígitos
 result resd 1               ; Almacena el resultado
 currentPower resd 1         ; ALmacena las potencia de 2
@@ -28,8 +28,8 @@ currentPower resd 1         ; ALmacena las potencia de 2
     PutStr warming_msg
     nwln
     PutStr instruction_msg
-    GetStr bynarySecuence, 16
-    mov ESI, bynarySecuence  ; Apunta a la secuencia binaria
+    GetStr bynarySequence, 16
+    mov ESI, bynarySequence  ; Apunta a la secuencia binaria
     mov EBX, 0               ; Índice para recorrer la secuencia
     mov [result], EBX          ; Inicializa el resultado a 0
     
@@ -59,7 +59,7 @@ continue:
     mov [numDigits], EBX   ; EBX tiene el número de dígitos
     mov AX, 0             ; Limpia registro
     
-    mov ESI, bynarySecuence
+    mov ESI, bynarySequence
     mov EBX, [numDigits]     
     
     mov CL,1
