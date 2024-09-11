@@ -19,6 +19,7 @@ author_info_msg db 'Estudiante: Brian Ramirez Arias Carnet: 2024109557', 0
 bynarySecuence resb 16      ; Buffer para 16 bits 
 numDigits resb 1            ; Almacena el número de dígitos
 result resd 1               ; Almacena el resultado
+currentPower resd 1         ; ALmacena las potencia de 2
 
 .CODE
     .STARTUP
@@ -56,36 +57,42 @@ errorNum:
 continue:
 
     mov [numDigits], EBX   ; EBX tiene el número de dígitos
-    mov EAX, 0             ; Limpia registro
-    mov CL, 0              ; Limpia registro
+    mov AX, 0             ; Limpia registro
     
     mov ESI, bynarySecuence
     mov EBX, [numDigits]     
     
+    mov CL,1
+    mov [currentPower], CL     ; Inicializa la potencia de 2 en 1 
+    mov CL,0                   ; Limpia registro
+
 convert:
-    dec EBX                  ; EBX al principio contiene 1 mas que la secuencia original
-    mov DL, [ESI + EBX]      ; Recorre la cadena caracter por caracter
+    dec EBX                  ; Decrementa EBX(Contiene la cantidad de bits)
+    mov DL, [ESI + EBX]      ; Recorre bit por bit 
     cmp DL, 0                ; Verifica si se llegó al final de la cadena
     je final
 
-    ; Convierte el carácter a su valor numérico
-    cmp DL, '1'
-    jne skipAdd              ; Si es '0'
-    
-    ; Si es '1'
-    mov EAX, 1               
-    shl EAX,CL              ; Desplaza EAX por el valor actual en CL
-    add [result], EAX       ; Suma el resultado al acumulador final
+    cmp DL, '1'              
+    jne nonAdd              ; Si es '0'
 
-skipAdd:
-    inc CL                  ; Incrementa el contador de dígitos 
+    ; Si es '1'
+    mov AX, [currentPower]  ; Carga la potencia actual de 2 en EAX
+    add [result], EAX        ; Suma la potencia de 2 al resultado
+
+nonAdd:
+    ; Multiplica la potencia actual de 2 por 2 
+    mov AX, [currentPower]  ; Carga la potencia de 2 actual en EAX
+    mov ECX, 2               ; Carga 2 en ECX
+    mul ECX                  ; AX = AX * 2 (Multiplica la potencia por 2)
+    mov [currentPower], AX  ; Guarda la nueva potencia de 2
+
     cmp EBX, 0
-    jne convert             ; Si hay no es el final de la cadena
+    jne convert              ; Si no se ha terminado de recorrer la cadena
 
 final:
     PutStr result_msg
-    mov CX, [result]        ;Se almacena en un registro el resultado
-    PutInt CX              
+    mov CX, [result]        ; Carga el resultado en EAX
+    PutInt CX               ; Imprime el resultado
     nwln
     nwln
     PutStr author_info_msg
